@@ -1,8 +1,18 @@
-streamlit==1.38.0
-langchain==0.2.14
-faiss-cpu==1.8.0
-sentence-transformers==2.6.1
-scikit-learn==1.4.2
-pandas==2.2.2
-numpy==1.26.4
-openai==1.43.0
+# Streamlit & core
+streamlit>=1.38,<1.40
+
+# LangChain and OpenAI integrations
+langchain>=0.2.14,<0.3
+langchain-community>=0.2.12,<0.3
+langchain-openai>=0.1.7
+
+# Vector store
+faiss-cpu==1.12.0    # available for Python 3.13 per Cloud environment
+
+# OpenAI SDK
+openai>=1.43.0
+
+# Data libs (versions that resolve on Py3.13)
+numpy>=2.0.0
+pandas>=2.2.2
+scikit-learn>=1.4.2

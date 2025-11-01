@@ -1,12 +1,24 @@
-import streamlit as st
+from pathlib import Path
 
-# Secrets
-OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY", "")
+# ---------- Paths ----------
+# Repo root (…/PodPredictionRAG)
+BASE_DIR: Path = Path(__file__).resolve().parents[1]
 
-# Thresholds
-CPU_THRESHOLD = 75
-MEMORY_THRESHOLD = 75
+# Knowledge base folder (files you upload or ship with the app)
+KB_FOLDER: Path = BASE_DIR / "knowledge_base"
 
-# Paths
-FAISS_INDEX_PATH = "vectorstore"
-KB_FOLDER = "knowledge_base"
+# FAISS index folder (created automatically)
+FAISS_INDEX_PATH: Path = BASE_DIR / "vectorstore"
+
+
+# RAG / Embeddings
+EMBED_MODEL: str = "text-embedding-3-small"   # OpenAI embedding model
+
+
+# Chunking for document splitting
+CHUNK_SIZE: int = 1000
+CHUNK_OVERLAP: int = 150
+
+# ---------- Forecasting guardrails ----------
+# Keep per-pod utilization under this (0.75 = 75%)
+MAX_UTIL_RATIO: float = 0.75

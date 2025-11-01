@@ -4,21 +4,17 @@ from typing import List
 from langchain_community.document_loaders import TextLoader, CSVLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_openai import OpenAIEmbeddings
 
 from .config import EMBED_MODEL, CHUNK_SIZE, CHUNK_OVERLAP
 
 
 def _embeddings():
-    # Normalize vectors; CPU works fine on Streamlit Cloud
-    return HuggingFaceEmbeddings(
-        model_name=EMBED_MODEL,
-        encode_kwargs={"normalize_embeddings": True, "device": "cpu"},
-    )
+    # Uses OpenAI embeddings via your OPENAI_API_KEY (Streamlit Secrets)
+    return OpenAIEmbeddings(model=EMBED_MODEL)
 
 
 def load_documents(kb_folder: Path):
-    """Load .txt/.md/.csv from kb_folder and ensure 'source' metadata is the filename."""
     kb_folder = Path(kb_folder)
     kb_folder.mkdir(parents=True, exist_ok=True)
 
@@ -31,13 +27,10 @@ def load_documents(kb_folder: Path):
             items = CSVLoader(str(p)).load()
         else:
             continue
-
-        # Normalize metadata so citations look like [filename.ext]
         for d in items:
             d.metadata = d.metadata or {}
             d.metadata["source"] = p.name
         docs.extend(items)
-
     return docs
 
 
@@ -58,7 +51,6 @@ def create_faiss_index(chunks, index_path: Path):
 
 
 def load_faiss_index(index_path: Path):
-    # allow_dangerous_deserialization handles minor version differences safely
     return FAISS.load_local(
         str(index_path),
         _embeddings(),
