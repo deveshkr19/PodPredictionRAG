@@ -1,0 +1,8 @@
+To reduce CPU utilization in OpenShift:
+- Enable caching with Redis.
+- Optimize Java thread pools (ExecutorService).
+- Avoid synchronous I/O in high-TPS APIs.
+- Monitor garbage collection (GC pause times) using JVM flags.
+
+LoadRunner Tip:
+Use think time = 0 for backend stress; add pacing = realistic user behavior.

@@ -1,0 +1,3 @@
+Issue, Root Cause, Fix, Recommendation
+High CPU in prod, GC Overhead, Switched to G1GC, Monitor JVM GC metrics
+Memory spikes, Memory leak in thread pool, Rewrote async tasks, Use JFR for leak detection
