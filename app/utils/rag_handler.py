@@ -36,6 +36,6 @@ def ask(db_tuple, question: str, k: int = 6) -> str:
     index, meta = db_tuple
     if index is None or meta is None:
         return ""
-    hits = search(index, meta, question, model=meta["model"], k=k)
+    hits = search(index, meta, question, model=meta["model"], k=max(k,10))
     parts = [f"[{src}] {text}" for (src, text, _score) in hits]
     return "\n\n".join(parts)
