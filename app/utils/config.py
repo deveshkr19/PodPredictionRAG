@@ -12,7 +12,9 @@ FAISS_INDEX_PATH: Path = BASE_DIR / "vectorstore"
 
 
 # RAG / Embeddings
-EMBED_MODEL: str = "text-embedding-3-small"   # OpenAI embedding model
+# app/utils/config.py
+EMBED_MODEL: str = "text-embedding-3-small"   # or "text-embedding-3-large"
+
 
 
 # Chunking for document splitting
