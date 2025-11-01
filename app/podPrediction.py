@@ -1,6 +1,3 @@
-```python
-# app/podPrediction.py
-
 import math
 from pathlib import Path
 from typing import Tuple, Optional
@@ -139,7 +136,6 @@ with c4:
 
 st.caption(f"Guardrail: keep per-pod CPU & Memory ≤ {int(MAX_UTIL_RATIO*100)}% on steady load.")
 
-# Predict utilization if all load went to a single pod, then compute pods
 pred_cpu_1pod, pred_mem_1pod = utilization_for_tps(cpu_model, mem_model, expected_tps)
 pods = pods_from_util(pred_cpu_1pod, pred_mem_1pod, MAX_UTIL_RATIO)
 
@@ -155,7 +151,6 @@ if est_cpu_per_pod <= MAX_UTIL_RATIO * 100 and est_mem_per_pod <= MAX_UTIL_RATIO
 else:
     st.warning("Configuration exceeds utilization guardrails; increase pods or resources per pod.")
 
-# Download result
 result_row = pd.DataFrame(
     [{
         "tps": expected_tps,
@@ -179,7 +174,6 @@ st.divider()
 # ----------------------------- 3) Knowledge Base (RAG) -----------------------------
 st.header("3) Knowledge Base (RAG)")
 
-# Upload KB files (txt/md/csv)
 kb_files = st.file_uploader(
     "Upload knowledge files (txt, md, csv). These are indexed for Q&A.",
     type=["txt", "md", "csv"],
@@ -188,23 +182,17 @@ kb_files = st.file_uploader(
 if kb_files:
     kb_dir = Path(KB_FOLDER)
     kb_dir.mkdir(parents=True, exist_ok=True)
-    saved = 0
     for f in kb_files:
         (kb_dir / f.name).write_bytes(f.read())
-        saved += 1
-    st.success(f"Saved {saved} file(s) to {kb_dir}")
+    st.success(f"Saved {len(kb_files)} file(s) to {kb_dir}")
 
-# Build / Rebuild index
-colA, colB = st.columns(2)
-with colA:
-    if st.button("Build / Rebuild FAISS Index"):
-        st.session_state.db = ensure_index(KB_FOLDER, FAISS_INDEX_PATH)
-        if st.session_state.db and all(st.session_state.db):
-            st.toast("Index built.", icon="✅")
-        else:
-            st.toast("No KB docs found. Add files first.", icon="⚠️")
+if st.button("Build / Rebuild FAISS Index"):
+    st.session_state.db = ensure_index(KB_FOLDER, FAISS_INDEX_PATH)
+    if st.session_state.db and all(st.session_state.db):
+        st.toast("Index built.", icon="✅")
+    else:
+        st.toast("No KB docs found. Add files first.", icon="⚠️")
 
-# Lazy load (or auto-build if index + docs exist)
 if "db" not in st.session_state:
     st.session_state.db = ensure_index(KB_FOLDER, FAISS_INDEX_PATH)
 
@@ -217,7 +205,6 @@ else:
 # ----------------------------- 4) RAG Q&A (Enter-to-submit) -----------------------------
 st.subheader("Ask a performance-related question")
 
-# Controls
 col1, col2, col3 = st.columns([2, 1, 1])
 with col1:
     use_rag = st.checkbox("Use Knowledge Base (RAG)", value=True)
@@ -232,15 +219,14 @@ def run_answer(q: str):
         st.warning("Type a question first.")
         return
 
-    # Build context if RAG is enabled and index exists
     context = ""
     if use_rag:
         db_tuple = st.session_state.get("db", None)
         if not db_tuple or not all(db_tuple):
             st.error("Knowledge index not ready. Upload KB files and click **Build / Rebuild**.")
             return
-        context = ask(db_tuple, q, k=8)  # wider retrieval
-        context = context[:8000]  # keep prompt safe
+        context = ask(db_tuple, q, k=8)
+        context = context[:8000]
 
     try:
         ans = answer_with_openai(context, q, model=model_choice, temperature=temp)
@@ -252,14 +238,12 @@ def run_answer(q: str):
         st.error(f"OpenAI call failed: {e}")
 
 
-# Use a form so ENTER submits the question
 with st.form("rag_form", clear_on_submit=False):
     user_q = st.text_input(
         "Question",
         placeholder="e.g., What’s the safe CPU and memory utilization target per pod?",
         key="rag_q",
     )
-    # Pressing ENTER triggers this submit button automatically
     submitted = st.form_submit_button("Answer with RAG" if use_rag else "Answer (model only)")
 
 if submitted:
