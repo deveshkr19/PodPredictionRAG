@@ -1,21 +1,8 @@
-# Web UI
-streamlit
-
-# Data processing
-pandas
-numpy
-
-# ML model
-scikit-learn
-
-# Visualizations
-matplotlib
-seaborn
-
-# OpenAI access
-openai
-
-# RAG + Vector DB
-langchain==0.1.14
-sentence-transformers
-faiss-cpu
+streamlit==1.38.0
+langchain==0.2.14
+faiss-cpu==1.8.0
+sentence-transformers==2.6.1
+scikit-learn==1.4.2
+pandas==2.2.2
+numpy==1.26.4
+openai==1.43.0
